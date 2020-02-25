@@ -39,7 +39,7 @@ jobs:
             }).then(({data}) => {
 
                 let milestone = data.find(function (milestone) {
-                    return milestone.title === "${{github.event.release.tag_name}}"
+                    return milestone.title === context.event.release.tag_name
                 });
 
                 const options = octokit.issues.listForRepo.endpoint.merge({
@@ -57,7 +57,7 @@ jobs:
                     octokit.repos.getReleaseByTag({
                         owner: context.repo.owner
                         repo: context.repo.repo
-                        tag: ${{github.event.release.tag_name}},
+                        tag: context.event.release.tag_name
                     }).then(({data}) => {
 
                         octokit.repos.updateRelease({
