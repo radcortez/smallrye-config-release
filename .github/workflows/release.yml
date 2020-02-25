@@ -33,28 +33,40 @@ jobs:
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
-            const options = github.issues.listForRepo.endpoint.merge({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                milestone: "${{github.event.release.tag_name}}"
-            });
-            github.paginate(options).then(issues => {
-                let notes = "";
-                for (const issue of issues) {
-                    notes = notes + "- #" + issue.number + " " + issue.title + "\n";
-                }
+            octokit.issues.listMilestonesForRepo({
+                owner: context.repo.owner
+                repo: context.repo.repo
+            }).then(({data}) => {
 
-                github.repos.getReleaseByTag({
-                    owner: context.repo.owner,
-                    repo: context.repo.repo,
-                    tag: "${{github.event.release.tag_name}}"
-                }).then(({ data }) => {
+                let milestone = data.find(function (milestone) {
+                    return milestone.title === "${{github.event.release.tag_name}}"
+                });
 
-                    github.repos.updateRelease({
-                        owner: context.repo.owner,
-                        repo: context.repo.repo,
-                        release_id: data.id,
-                        body: notes
+                const options = octokit.issues.listForRepo.endpoint.merge({
+                    owner: context.repo.owner
+                    repo: context.repo.repo
+                    milestone: milestone.number
+                });
+
+                octokit.paginate(options).then(issues => {
+                    let notes = "";
+                    for (const issue of issues) {
+                        notes = notes + "- #" + issue.number + " " + issue.title + "\n";
+                    }
+
+                    octokit.repos.getReleaseByTag({
+                        owner: context.repo.owner
+                        repo: context.repo.repo
+                        tag: ${{github.event.release.tag_name}},
+                    }).then(({data}) => {
+
+                        octokit.repos.updateRelease({
+                            owner: context.repo.owner
+                            repo: context.repo.repo
+                            release_id: data.id,
+                            body: notes
+                        });
+
                     });
 
                 });
