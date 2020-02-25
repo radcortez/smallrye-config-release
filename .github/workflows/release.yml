@@ -16,8 +16,6 @@ jobs:
           java-version: 8
 
       - name: release ${{github.event.release.tag_name}}
-        env:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         run: |
           git config --global user.name "SmallRye CI"
           git config --global user.email "smallrye@googlegroups.com"
@@ -33,12 +31,12 @@ jobs:
 
       - uses: actions/github-script@0.5.0
         with:
-          github-token: ${{secrets.GITHUB}} # TODO - rename secret
+          github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
             const options = github.issues.listForRepo.endpoint.merge({
-                owner: "radcortez",
-                repo: "smallrye-release",
-                milestone: "1"
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                milestone: "${{github.event.release.tag_name}}"
             });
             github.paginate(options).then(issues => {
                 let notes = "";
@@ -47,14 +45,14 @@ jobs:
                 }
 
                 github.repos.getReleaseByTag({
-                    owner: "radcortez",
-                    repo: "smallrye-release",
-                    tag: "1",
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    tag: "${{github.event.release.tag_name}}"
                 }).then(({ data }) => {
 
                     github.repos.updateRelease({
-                        owner: "radcortez",
-                        repo: "smallrye-release",
+                        owner: context.repo.owner,
+                        repo: context.repo.repo,
                         release_id: data.id,
                         body: notes
                     });
