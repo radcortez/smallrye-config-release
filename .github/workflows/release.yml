@@ -2,7 +2,7 @@ name: SmallRye Release
 
 on:
   release:
-    types: [published]
+    types: [created]
 
 jobs:
   release:
@@ -12,95 +12,94 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: prepare-release-github
-        run: |
-          git config --global user.name "SmallRye CI"
-          git config --global user.email "smallrye@googlegroups.com"
-          git fetch --all
-          git switch -c release
-          git tag release-${{github.event.release.tag_name}}
-          git push origin release-${{github.event.release.tag_name}}
-
-      - uses: actions/github-script@0.5.0
-        with:
-          github-token: ${{secrets.GITHUB_TOKEN}}
-          script: |
-            github.repos.getReleaseByTag({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                tag: "${{github.event.release.tag_name}}",
-            }).then(({ data }) => {
-                github.repos.updateRelease({
-                    owner: context.repo.owner,
-                    repo: context.repo.repo,
-                    release_id: data.id,
-                    tag_name: "release-${{github.event.release.tag_name}}"
-                });
-            });
-
-
-#      - uses: actions/setup-java@v1.3.0
-#        with:
-#          java-version: 8
-
-#      - name: release ${{github.event.release.tag_name}}
+#      - name: prepare-release-github
 #        run: |
 #          git config --global user.name "SmallRye CI"
 #          git config --global user.email "smallrye@googlegroups.com"
 #          git fetch --all
 #          git switch -c release
-#          git tag -d ${{github.event.release.tag_name}}
-#          git push --delete origin ${{github.event.release.tag_name}}
-#          mvn -B release:prepare -DreleaseVersion=${{github.event.release.tag_name}}
-#          git push origin ${{github.event.release.tag_name}}
-#          git checkout -b master origin/master
-#          git rebase release
-#          git push
+#          git tag release-${{github.event.release.tag_name}}
+#          git push origin release-${{github.event.release.tag_name}}
 #
 #      - uses: actions/github-script@0.5.0
 #        with:
 #          github-token: ${{secrets.GITHUB_TOKEN}}
 #          script: |
-#            github.issues.listMilestonesForRepo({
+#            github.repos.getReleaseByTag({
 #                owner: context.repo.owner,
-#                repo: context.repo.repo
-#            }).then(({data}) => {
-#
-#                let milestone = data.find(function (milestone) {
-#                    return milestone.title === "${{github.event.release.tag_name}}"
-#                });
-#
-#                const options = github.issues.listForRepo.endpoint.merge({
+#                repo: context.repo.repo,
+#                tag: "${{github.event.release.tag_name}}",
+#            }).then(({ data }) => {
+#                github.repos.updateRelease({
 #                    owner: context.repo.owner,
 #                    repo: context.repo.repo,
-#                    milestone: milestone.number
+#                    release_id: data.id,
+#                    tag_name: "release-${{github.event.release.tag_name}}"
 #                });
-#
-#                github.paginate(options).then(issues => {
-#                    let notes = "";
-#                    for (const issue of issues) {
-#                        notes = notes + "- #" + issue.number + " " + issue.title + "\n";
-#                    }
-#
-#                    github.repos.listReleases({
-#                        owner: context.repo.owner,
-#                        repo: context.repo.repo
-#                    }).then(({data}) => {
-#
-#                        let release = data.find(function (release) {
-#                            return release.tag_name === "${{github.event.release.tag_name}}"
-#                        });
-#
-#                        github.repos.updateRelease({
-#                            owner: context.repo.owner,
-#                            repo: context.repo.repo
-#                            release_id: release.id,
-#                            tag_name: "${{github.event.release.tag_name}}",
-#                            draft: false,
-#                            body: notes
-#                        });
-#                    });
-#
-#                });
-#
 #            });
+
+      - uses: actions/setup-java@v1.3.0
+        with:
+          java-version: 8
+
+      - name: release ${{github.event.release.tag_name}}
+        run: |
+          git config --global user.name "SmallRye CI"
+          git config --global user.email "smallrye@googlegroups.com"
+          git fetch --all
+          git switch -c release
+          git tag -d ${{github.event.release.tag_name}}
+          git push --delete origin ${{github.event.release.tag_name}}
+          mvn -B release:prepare -DreleaseVersion=${{github.event.release.tag_name}}
+          git push origin ${{github.event.release.tag_name}}
+          git checkout -b master origin/master
+          git rebase release
+          git push
+
+      - uses: actions/github-script@0.5.0
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            github.issues.listMilestonesForRepo({
+                owner: context.repo.owner,
+                repo: context.repo.repo
+            }).then(({data}) => {
+
+                let milestone = data.find(function (milestone) {
+                    return milestone.title === "${{github.event.release.tag_name}}"
+                });
+
+                const options = github.issues.listForRepo.endpoint.merge({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    milestone: milestone.number
+                });
+
+                github.paginate(options).then(issues => {
+                    let notes = "";
+                    for (const issue of issues) {
+                        notes = notes + "- #" + issue.number + " " + issue.title + "\n";
+                    }
+
+                    github.repos.listReleases({
+                        owner: context.repo.owner,
+                        repo: context.repo.repo
+                    }).then(({data}) => {
+
+                        let release = data.find(function (release) {
+                            return release.tag_name === "${{github.event.release.tag_name}}"
+                        });
+
+                        github.repos.updateRelease({
+                            owner: context.repo.owner,
+                            repo: context.repo.repo,
+                            release_id: release.id,
+                            tag_name: "${{github.event.release.tag_name}}",
+                            draft: false,
+                            body: notes
+                        });
+                    });
+
+                });
+
+            });
