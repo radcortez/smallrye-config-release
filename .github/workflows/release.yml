@@ -15,20 +15,20 @@ jobs:
         with:
           java-version: 8
 
-#      - name: release ${{github.event.release.tag_name}}
-#        env:
-#          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-#        run: |
-#          git config --global user.name "SmallRye CI"
-#          git config --global user.email "smallrye@googlegroups.com"
-#          git switch -c release
-#          git tag -d ${{github.event.release.tag_name}}
-#          git push --delete origin ${{github.event.release.tag_name}}
-#          mvn -B release:prepare -DreleaseVersion=${{github.event.release.tag_name}}
+      - name: release ${{github.event.release.tag_name}}
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        run: |
+          git config --global user.name "SmallRye CI"
+          git config --global user.email "smallrye@googlegroups.com"
+          git switch -c release
+          git tag -d ${{github.event.release.tag_name}}
+          git push --delete origin ${{github.event.release.tag_name}}
+          mvn -B release:prepare -DreleaseVersion=${{github.event.release.tag_name}}
 
       - uses: actions/github-script@0.5.0
         with:
-          github-token: ${{secrets.GITHUB}}
+          github-token: ${{secrets.GITHUB}} # TODO - rename secret
           script: |
             const options = github.issues.listForRepo.endpoint.merge({
                 owner: "radcortez",
