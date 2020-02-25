@@ -54,9 +54,9 @@
   </issueManagement>
 
   <scm>
-    <connection>scm:git:git@github.com:smallrye/smallrye-config.git</connection>
-    <developerConnection>scm:git:git@github.com:smallrye/smallrye-config.git</developerConnection>
-    <url>https://github.com/smallrye/smallrye-config/</url>
+    <connection>scm:git:git@github.com:radcortez/smallrye-config.git</connection>
+    <developerConnection>scm:git:git@github.com:radcortez/smallrye-config.git</developerConnection>
+    <url>https://github.com/radcortez/smallrye-config/</url>
     <tag>HEAD</tag>
   </scm>
 
