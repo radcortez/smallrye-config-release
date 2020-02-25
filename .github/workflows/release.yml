@@ -12,37 +12,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-#      - name: prepare-release-github
-#        run: |
-#          git config --global user.name "SmallRye CI"
-#          git config --global user.email "smallrye@googlegroups.com"
-#          git fetch --all
-#          git switch -c release
-#          git tag release-${{github.event.release.tag_name}}
-#          git push origin release-${{github.event.release.tag_name}}
-#
-#      - uses: actions/github-script@0.5.0
-#        with:
-#          github-token: ${{secrets.GITHUB_TOKEN}}
-#          script: |
-#            github.repos.getReleaseByTag({
-#                owner: context.repo.owner,
-#                repo: context.repo.repo,
-#                tag: "${{github.event.release.tag_name}}",
-#            }).then(({ data }) => {
-#                github.repos.updateRelease({
-#                    owner: context.repo.owner,
-#                    repo: context.repo.repo,
-#                    release_id: data.id,
-#                    tag_name: "release-${{github.event.release.tag_name}}"
-#                });
-#            });
-
       - uses: actions/setup-java@v1.3.0
         with:
           java-version: 8
 
-      - name: release ${{github.event.release.tag_name}}
+      - name: maven release ${{github.event.release.tag_name}}
         run: |
           git config --global user.name "SmallRye CI"
           git config --global user.email "smallrye@googlegroups.com"
@@ -57,6 +31,7 @@ jobs:
           git push
 
       - uses: actions/github-script@0.5.0
+        name: update release notes
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
