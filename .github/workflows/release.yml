@@ -22,5 +22,7 @@ jobs:
           git config --global user.name "SmallRye CI"
           git config --global user.email "smallrye@googlegroups.com"
           git switch -c release
+          git tag -d ${{github.event.release.tag_name}}
           git push --delete origin ${{github.event.release.tag_name}}
-          mvn -B release:prepare -DreleaseVersion=${{github.event.release.tag_name}} -DpushChanges=false
+          mvn -B release:prepare -DreleaseVersion=${{github.event.release.tag_name}}
+
