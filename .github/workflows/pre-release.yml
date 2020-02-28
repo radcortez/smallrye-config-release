@@ -1,0 +1,16 @@
+name: SmallRye Pre Release Checks
+
+on:
+  pull_request:
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    name: pre release
+
+    steps:
+      - uses: radcortez/milestone-status-action@master
+        name: milestone check exists and issues closed
+        with:
+          github-token: ${{secrets.GITHUBTOKEN}}
+          milestone-number: 1
