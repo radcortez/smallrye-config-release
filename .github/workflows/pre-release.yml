@@ -12,5 +12,5 @@ jobs:
       - uses: radcortez/milestone-status-action@master
         name: milestone check exists and issues closed
         with:
-          github-token: ${{secrets.GITHUBTOKEN}}
+          github-token: ${{secrets.GITHUB_TOKEN}}
           milestone-number: 1
