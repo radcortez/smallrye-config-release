@@ -9,8 +9,15 @@ jobs:
     name: pre release
 
     steps:
+      - uses: radcortez/project-version-action@master
+        name: retrieve project version
+        id: version
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          version-file-path: '.github/release/version'
+
       - uses: radcortez/milestone-status-action@master
         name: milestone check exists and issues closed
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
-          milestone-number: 1
+          milestone-title: ${{steps.version.outputs.project-version}}
