@@ -11,6 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     name: release
     if: ${{github.event.pull_request.merged == true}}
+    env:
+      GITHUB_TOKEN: ${{secrets.GITHUB_RELEASE_TOKEN}}
 
     steps:
       - uses: radcortez/project-version-action@master
@@ -21,6 +23,8 @@ jobs:
           version-file-path: '.github/release/version'
 
       - uses: actions/checkout@v2
+        with:
+          token: ${{secrets.GITHUB_RELEASE_TOKEN}}
 
       - name: maven release ${{steps.version.outputs.project-version}}
         run: |
