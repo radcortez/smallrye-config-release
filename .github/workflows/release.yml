@@ -26,10 +26,7 @@ jobs:
         run: |
           git config --global user.name "SmallRye CI"
           git config --global user.email "smallrye@googlegroups.com"
-          git fetch --all
-          git switch -c release
+          git branch -avv
           mvn -B release:prepare -DreleaseVersion=${{steps.version.outputs.project-version}}
-          git push origin ${{steps.version.outputs.project-version}}
-          git checkout -b master origin/master
-          git rebase release
           git push
+          git push --tags
