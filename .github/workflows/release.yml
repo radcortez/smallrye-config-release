@@ -11,13 +11,15 @@ jobs:
     runs-on: ubuntu-latest
     name: release
     if: ${{github.event.pull_request.merged == true}}
+    env:
+      GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN_RELEASE}}
 
     steps:
       - uses: radcortez/project-version-action@master
         name: retrieve project version
         id: version
         with:
-          github-token: ${{secrets.GITHUB_TOKEN}}
+          github-token: ${{secrets.GITHUB_TOKEN_RELEASE}}
           version-file-path: '.github/release/version'
 
       - uses: actions/checkout@v2
