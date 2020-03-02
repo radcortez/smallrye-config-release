@@ -29,7 +29,5 @@ jobs:
           git fetch --all
           git switch -c release
           mvn -B release:prepare -DreleaseVersion=${{steps.version.outputs.project-version}}
-          git push origin ${{steps.version.outputs.project-version}}
-          git checkout -b master origin/master
-          git rebase release
           git push
+          git push --tags
