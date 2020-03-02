@@ -1,0 +1,34 @@
+name: SmallRye PR Closed
+
+on:
+  pull_request:
+    types: [closed]
+    paths:
+      - '.github/release/version'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    name: release
+
+    steps:
+      - uses: radcortez/project-version-action@master
+        name: retrieve project version
+        id: version
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          version-file-path: '.github/release/version'
+
+      - uses: actions/checkout@v2
+
+      - name: maven release ${{steps.version.outputs.project-version}}
+        run: |
+          git config --global user.name "SmallRye CI"
+          git config --global user.email "smallrye@googlegroups.com"
+          git fetch --all
+          git switch -c release
+          mvn -B release:prepare -DreleaseVersion=${{steps.version.outputs.project-version}}
+          git push origin ${{steps.version.outputs.project-version}}
+          git checkout -b master origin/master
+          git rebase release
+          git push
