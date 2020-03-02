@@ -27,9 +27,8 @@ jobs:
           git config --global user.name "SmallRye CI"
           git config --global user.email "smallrye@googlegroups.com"
           git checkout -b release
-          git branch -avv
           mvn -B release:prepare -DreleaseVersion=${{steps.version.outputs.project-version}}
           git checkout master
           git rebase release
-          git push --tags
           git push
+          git push --tags
