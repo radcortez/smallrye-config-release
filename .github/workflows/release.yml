@@ -1,4 +1,4 @@
-name: SmallRye PR Closed
+name: SmallRye Release
 
 on:
   pull_request:
@@ -36,3 +36,10 @@ jobs:
           git rebase release
           git push
           git push --tags
+
+      - uses: radcortez/milestone-release-action@master
+        name: milestone release
+        id: version
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          milestone-title: ${{steps.version.outputs.project-version}}

@@ -1,4 +1,4 @@
-name: SmallRye Pre Release Checks
+name: SmallRye Pre Release
 
 on:
   pull_request:
@@ -18,8 +18,8 @@ jobs:
           github-token: ${{secrets.GITHUB_TOKEN}}
           version-file-path: '.github/release/version'
 
-      - uses: radcortez/milestone-status-action@master
-        name: milestone check exists and issues closed
+      - uses: radcortez/milestone-review-action@master
+        name: milestone review
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           milestone-title: ${{steps.version.outputs.project-version}}
