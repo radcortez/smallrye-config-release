@@ -15,23 +15,23 @@ jobs:
       GITHUB_TOKEN: ${{secrets.GITHUB_RELEASE_TOKEN}}
 
     steps:
-      - uses: radcortez/project-version-action@master
-        name: retrieve project version
-        id: version
+      - uses: radcortez/project-metadata-action@master
+        name: retrieve project metadata
+        id: metadata
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
-          version-file-path: '.github/release/version'
+          version-file-path: '.github/project.yml'
 
       - uses: actions/checkout@v2
         with:
           token: ${{secrets.GITHUB_RELEASE_TOKEN}}
 
-      - name: maven release ${{steps.version.outputs.project-version}}
+      - name: maven release ${{steps.metadata.outputs.current-version}}
         run: |
           git config --global user.name "SmallRye CI"
           git config --global user.email "smallrye@googlegroups.com"
           git checkout -b release
-          mvn -B release:prepare -DreleaseVersion=${{steps.version.outputs.project-version}}
+          mvn -B release:prepare -DreleaseVersion=${{steps.metadata.outputs.current-version}}
           git checkout master
           git rebase release
           git push
@@ -41,4 +41,4 @@ jobs:
         name: milestone release
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
-          milestone-title: ${{steps.version.outputs.project-version}}
+          milestone-title: ${{steps.metadata.outputs.current-version}}
