@@ -26,6 +26,10 @@ jobs:
         with:
           token: ${{secrets.GITHUB_RELEASE_TOKEN}}
 
+      - uses: actions/setup-java@v1.3.0
+        with:
+          java-version: 8
+
       - name: maven release ${{steps.metadata.outputs.current-version}}
         run: |
           java -version
