@@ -11,7 +11,7 @@ jobs:
     name: pre release
 
     steps:
-      - uses: radcortez/project-metadata-action@main
+      - uses: radcortez/project-metadata-action@master
         name: retrieve project metadata
         id: metadata
         with:
