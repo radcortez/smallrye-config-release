@@ -7,16 +7,24 @@ on:
       - '.github/project.yml'
 
 jobs:
-  prepare-release:
-    name: Prepare Release
-    if: ${{ github.event.pull_request.merged == true}}
-    uses: smallrye/.github/.github/workflows/prepare-release.yml@main
-    secrets: inherit
+  release:
+    runs-on: ubuntu-latest
+    name: release
+    if: ${{github.event.pull_request.merged == true}}
+    env:
+      GITHUB_TOKEN: ${{secrets.RELEASE_TOKEN}}
 
-  publish-tck:
-    name: Publish TCK Report
-    needs: prepare-release
-    uses: ./.github/workflows/publish-tck.yml
-    secrets: inherit
-    with:
-      version: ${{needs.prepare-release.outputs.release-version}}
+    steps:
+      - uses: radcortez/project-metadata-action@main
+        name: retrieve project metadata
+        id: metadata
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          metadata-file-path: '.github/project.yml'
+
+      - uses: radcortez/milestone-release-action@main
+        name: milestone release
+        with:
+          github-token: ${{steps.app-token.outputs.token}}
+          milestone-title: ${{steps.metadata.outputs.current-version}}
+          milestone-next: ${{steps.metadata.outputs.next-version}}
